@@ -23,12 +23,12 @@ import (
 
 func TestController(t *testing.T) {
 	basePVC := createTestPVC(pvcName, testVac /*vacName*/, testVac /*curVacName*/, testVac /*targetVacName*/)
+	basePVC.Status.ModifyVolumeStatus = nil
 	basePV := createTestPV(1, pvcName, pvcNamespace, "foobaz" /*pvcUID*/, &fsVolumeMode, testVac)
 	firstTimePV := basePV.DeepCopy()
 	firstTimePV.Spec.VolumeAttributesClassName = nil
 	firstTimePVC := basePVC.DeepCopy()
 	firstTimePVC.Status.CurrentVolumeAttributesClassName = nil
-	firstTimePVC.Status.ModifyVolumeStatus = nil
 
 	tests := []struct {
 		name          string
@@ -178,6 +178,12 @@ func TestSyncPVC(t *testing.T) {
 		{
 			name:          "Should execute ModifyVolume operation when PVC's VAC changes",
 			pvc:           basePVC,
+			pv:            basePV,
+			callCSIModify: true,
+		},
+		{
+			name:          "Should execute ModifyVolume operation when rollback to empty VACName",
+			pvc:           createTestPVC(pvcName, "" /*vacName*/, "" /*curVacName*/, testVac /*targetVacName*/),
 			pv:            basePV,
 			callCSIModify: true,
 		},

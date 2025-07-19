@@ -33,6 +33,7 @@ var (
 
 func TestModify(t *testing.T) {
 	basePVC := createTestPVC(pvcName, testVac /*vacName*/, testVac /*curVacName*/, testVac /*targetVacName*/)
+	basePVC.Status.ModifyVolumeStatus = nil
 	basePV := createTestPV(1, pvcName, pvcNamespace, "foobaz" /*pvcUID*/, &fsVolumeMode, testVac)
 
 	var tests = []struct {
